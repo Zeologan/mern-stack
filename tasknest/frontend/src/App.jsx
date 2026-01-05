@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -19,7 +20,7 @@ function App() {
   }, []);
 
   const addTask = async () => {
-    if(!title) return
+    if (!title) return
     await axios.post("http://localhost:5000/api/tasks", { title });
     setTitle("");
     fetchTasks();
@@ -30,7 +31,7 @@ function App() {
     fetchTasks();
   };
 
-  const toggleTask = async(id) =>{
+  const toggleTask = async (id) => {
     await axios.put(`http://localhost:5000/api/tasks/${id}`);
     fetchTasks();
   }
@@ -54,12 +55,12 @@ function App() {
         {/* Fetch Task  */}
         <ul>
           {tasks.map((task) => (
-            <li key={task._id} style = {{marginTop: "10px"}}>
-              <input 
+            <li key={task._id} style={{ marginTop: "10px" }}>
+              <input
                 type="checkbox"
-                checked = {task.completed}
-                onChange={()=> toggleTask(task._id)}/>
-              <span style={{ marginLeft : "8px", textDecoration : task.completed ? "line-through" : "none",}}>
+                checked={task.completed}
+                onChange={() => toggleTask(task._id)} />
+              <span style={{ marginLeft: "8px", textDecoration: task.completed ? "line-through" : "none", }}>
                 {task.title}
               </span>
               <button onClick={() => deleteTask(task._id)}>❌</button>
@@ -68,13 +69,12 @@ function App() {
         </ul>
       </div>
 
-
       <BrowserRouter>
-          <Routers>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/register" element={<Register/>}/>
-            <Route path="/dashboard" element={<Dashboard/>}/>
-          </Routers>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
       </BrowserRouter>
     </>
   );

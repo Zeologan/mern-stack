@@ -20,10 +20,20 @@ function Dashboard(){
         .catch(()=> navigate("/login"));
     },[]);
 
+    const logout = () => {
+        const isConfirmed = window.confirm('Are you sure you want to logout?');
+        if(isConfirmed){
+            localStorage.removeItem("token")
+            navigate("/login")
+        }   
+    }
+
     return (
         <div>
             <h2>Dashboard</h2>
             {user && <p>Welcome, {user.name}</p>}
+
+            <button onClick={logout}>Logout</button>
         </div>
     )
 }

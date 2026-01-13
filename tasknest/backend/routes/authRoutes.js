@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Register 
 router.post("/register", async(req, res)=>{
-    const {name, email, password} = req.body;
+    const {name, email, password, role} = req.body;
     const existingUser = await User.findOne({email});
     if(existingUser){
         return res.status(400).json({message: "User already exists"})
@@ -18,9 +18,10 @@ router.post("/register", async(req, res)=>{
         name,
         email,
         password: hashedPassword,
+        role: role || "user"
     });
 
-    res.json({ message : "User registered"});
+    res.json({ message : "User registered Succesfully"});
 })
 
 
@@ -34,17 +35,21 @@ router.post("/login", async (req, res)=>{
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({message : "Invalid credentails"})
 
-    const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET,{expiresIn: "1d"});
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET,{expiresIn: "1d"});
     res.json({token});
 });
 
 // Protected Route 
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware")
 
 router.get("/profile", authMiddleware, async(req, res) => {
     const user = await User.findById(req.user.id).select("-password");
     res.json(user);
 })
 
+router.get("/admin",authMiddleware, roleMiddleware("admin"),(req,res)=>{
+    res.json({message: "Welcome Admin"});
+})
 
 module.exports = router;
